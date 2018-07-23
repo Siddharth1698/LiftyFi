@@ -17,7 +17,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-public class DriverLoginActivity extends AppCompatActivity {
+public class CustomerLoginActivity extends AppCompatActivity {
     private EditText mEmail,mPassword;
     private Button mLogin,mRegister;
     private FirebaseAuth auth;
@@ -29,19 +29,19 @@ public class DriverLoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_driver_login);
+        setContentView(R.layout.activity_customer_login);
         auth = FirebaseAuth.getInstance();
 
         firebaseAuthListner = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 user = FirebaseAuth.getInstance().getCurrentUser();
-                      if (user!=null){
-                          Intent intent = new Intent(DriverLoginActivity.this,MapActivity.class);
-                          startActivity(intent);
-                          finish();
-                          return;
-                      }
+                if (user!=null){
+                    Intent intent = new Intent(CustomerLoginActivity.this,MapActivity.class);
+                    startActivity(intent);
+                    finish();
+                    return;
+                }
             }
         };
         mEmail = (EditText)findViewById(R.id.emailDriver);
@@ -55,18 +55,18 @@ public class DriverLoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 email = mEmail.getText().toString();
                 password = mPassword.getText().toString();
-                auth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(DriverLoginActivity.this, new OnCompleteListener<AuthResult>() {
+                auth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(CustomerLoginActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                           if (task.isSuccessful()){
-                               uid = auth.getUid();
-                               DatabaseReference current_user_db = FirebaseDatabase.getInstance()
-                                       .getReference().child("Users").child("Drivers").child(uid);
-                               current_user_db.setValue(true);
-                               Toast.makeText(DriverLoginActivity.this,"Succesfully Registered",Toast.LENGTH_SHORT).show();
-                           }else {
-                               Toast.makeText(DriverLoginActivity.this,"Error signing in",Toast.LENGTH_SHORT).show();
-                           }
+                        if (task.isSuccessful()){
+                            uid = auth.getUid();
+                            DatabaseReference current_user_db = FirebaseDatabase.getInstance()
+                                    .getReference().child("Users").child("Customers").child(uid);
+                            current_user_db.setValue(true);
+                            Toast.makeText(CustomerLoginActivity.this,"Succesfully Registered",Toast.LENGTH_SHORT).show();
+                        }else {
+                            Toast.makeText(CustomerLoginActivity.this,"Error signing in",Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
 
@@ -78,13 +78,14 @@ public class DriverLoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 email = mEmail.getText().toString();
                 password = mPassword.getText().toString();
-                auth.signInWithEmailAndPassword(email,password).addOnCompleteListener(DriverLoginActivity.this, new OnCompleteListener<AuthResult>() {
+                auth.signInWithEmailAndPassword(email,password).addOnCompleteListener(CustomerLoginActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()){
-                            Toast.makeText(DriverLoginActivity.this,"Succesfully Signed in",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CustomerLoginActivity.this,"Succesfully Signed in",Toast.LENGTH_SHORT).show();
+
                         }else {
-                            Toast.makeText(DriverLoginActivity.this,"Error signing in",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CustomerLoginActivity.this,"Error signing in",Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
