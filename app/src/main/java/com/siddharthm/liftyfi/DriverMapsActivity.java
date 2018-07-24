@@ -22,7 +22,9 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -68,18 +70,26 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
         });
         getAssignedCustomer();
     }
-private String customerId = "";
+    private String customerId = "";
     private void getAssignedCustomer() {
         String driverId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference assignedCustomerRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverId).child("customerRideId");
+        final DatabaseReference assignedCustomerRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverId).child("customerRideId");
         assignedCustomerRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
 
-                        customerId = dataSnapshot.getValue().toString();
-                        getAssignedCustomerPickUpLocation();
+                    customerId = dataSnapshot.getValue().toString();
+                    getAssignedCustomerPickUpLocation();
 
+                }else {
+                    customerId = "";
+                    if (pickUpMarker!=null){
+                        pickUpMarker.remove();
+                    }
+                    if (assignedCustomerPickUpLocationRef != null) {
+                        assignedCustomerPickUpLocationRef.removeEventListener(assignedCustomerPickUpLocationRefListner);
+                    }
                 }
             }
 
@@ -90,14 +100,17 @@ private String customerId = "";
         });
 
     }
+    Marker pickUpMarker;
+    private DatabaseReference assignedCustomerPickUpLocationRef;
+    private ValueEventListener assignedCustomerPickUpLocationRefListner;
 
     private void getAssignedCustomerPickUpLocation() {
 
-        DatabaseReference assignedCustomerPickUpLocationRef = FirebaseDatabase.getInstance().getReference().child("customerRequest").child(customerId).child("l");
-        assignedCustomerPickUpLocationRef.addValueEventListener(new ValueEventListener() {
+        assignedCustomerPickUpLocationRef = FirebaseDatabase.getInstance().getReference().child("customerRequest").child(customerId).child("l");
+        assignedCustomerPickUpLocationRefListner = assignedCustomerPickUpLocationRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()){
+                if (dataSnapshot.exists() && !customerId.equals("")){
                     List<Object> map = (List<Object>) dataSnapshot.getValue();
                     double locationLat = 0;
                     double locationLng = 0;
@@ -107,7 +120,7 @@ private String customerId = "";
                     }
                     LatLng driverLatLng = new LatLng(locationLat,locationLng);
 
-                    mMap.addMarker(new MarkerOptions().position(driverLatLng).title("Pickup Location"));
+                    pickUpMarker = mMap.addMarker(new MarkerOptions().position(driverLatLng).title("Pickup Location").icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_pickup)));
 
                 }
             }
@@ -168,12 +181,12 @@ private String customerId = "";
             case "":
                 geoFireWorking.removeLocation(userid);
                 geoFireAvaiable.setLocation(userid,new GeoLocation(location.getLatitude(),location.getLongitude()));
-                 break;
+                break;
 
-                default:
-                    geoFireAvaiable.removeLocation(userid);
-                    geoFireWorking.setLocation(userid,new GeoLocation(location.getLatitude(),location.getLongitude()));
-                    break;
+            default:
+                geoFireAvaiable.removeLocation(userid);
+                geoFireWorking.setLocation(userid,new GeoLocation(location.getLatitude(),location.getLongitude()));
+                break;
         }
 
 
