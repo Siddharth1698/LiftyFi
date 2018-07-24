@@ -114,8 +114,9 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
                     HashMap map = new HashMap();
                     map.put("customerRideId",customerId);
                     driverRef.updateChildren(map);
-                    getDriverLocation();
+
                     request.setText("Looking for Driver Location...");
+                    getDriverLocation();
                 }
             }
 
@@ -147,7 +148,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
 
     private void getDriverLocation() {
 
-        DatabaseReference driverLocationRef = FirebaseDatabase.getInstance().getReference().child("driverWorking").child(driverFoundId).child("l");
+        DatabaseReference driverLocationRef = FirebaseDatabase.getInstance().getReference().child("driversWorking").child(driverFoundId).child("l");
         driverLocationRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -165,9 +166,24 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
                     if (driverMarker != null){
                         driverMarker.remove();
                     }
+                    Location loc1 = new Location("");
+                    loc1.setLatitude(pickuplocation.latitude);
+                    loc1.setLongitude(pickuplocation.longitude);
+
+                    Location loc2 = new Location("");
+                    loc2.setLatitude(driverLatLng.latitude);
+                    loc2.setLongitude(driverLatLng.longitude);
+
+                    float distance = loc1.distanceTo(loc2);
+
+                    if (distance<100){
+                        request.setText("Driver's Here");
+                    }else{
+                        request.setText("Driver Found: " + String.valueOf(distance));
+                    }
                     driverMarker = mMap.addMarker(new MarkerOptions().position(driverLatLng).title("Your Driver"));
 
-                }
+                } 
             }
 
             @Override
