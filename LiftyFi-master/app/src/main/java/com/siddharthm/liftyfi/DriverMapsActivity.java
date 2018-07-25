@@ -52,7 +52,7 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
     private Boolean isLoggingOut = false;
     private LinearLayout mCustomerInfo;
     private ImageView mCustomerProfileImage;
-    private TextView mCustomerName,mCustomerPhone,mCustomerDestination;
+    private TextView mCustomerName,mCustomerPhone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +63,6 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
         mCustomerProfileImage = (ImageView) findViewById(R.id.customerProfileImage);
         mCustomerName = (TextView) findViewById(R.id.customerName);
         mCustomerPhone = (TextView) findViewById(R.id.customerPhone);
-        mCustomerDestination = (TextView)findViewById(R.id.customerDestination);
         logoutdriver = (Button)findViewById(R.id.logoutdriver);
         userid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -89,7 +88,7 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
     private String customerId = "";
     private void getAssignedCustomer() {
         String driverId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        final DatabaseReference assignedCustomerRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverId).child("customerRequest").child("customerRideId");
+        final DatabaseReference assignedCustomerRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverId).child("customerRideId");
         assignedCustomerRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -97,7 +96,6 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
 
                     customerId = dataSnapshot.getValue().toString();
                     getAssignedCustomerPickUpLocation();
-                    getAssignedCustomerDestination();
                     getAssignedCustomerInfo();
 
                 }else {
@@ -111,34 +109,7 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
                     mCustomerInfo.setVisibility(View.GONE);
                     mCustomerName.setText("");
                     mCustomerPhone.setText("");
-                    mCustomerDestination.setText("Destination: -- " );
-
                     mCustomerProfileImage.setImageResource(R.drawable.default_pic);
-
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-    }
-
-    private void getAssignedCustomerDestination() {
-        String driverId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        final DatabaseReference assignedCustomerRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverId).child("customerRequest").child("destination");
-        assignedCustomerRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()){
-
-                    String destination = dataSnapshot.getValue().toString();
-                    mCustomerDestination.setText("Destination: -- " + destination);
-
-                }else {
-                    mCustomerDestination.setText("Destination: -- " );
 
                 }
             }
@@ -249,7 +220,7 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
         mLastLocation = location;
         LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
 
         DatabaseReference refAvailable = FirebaseDatabase.getInstance().getReference("driversAvailable");
         DatabaseReference refWorking = FirebaseDatabase.getInstance().getReference("driversWorking");
