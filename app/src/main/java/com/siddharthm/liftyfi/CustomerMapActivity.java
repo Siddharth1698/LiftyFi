@@ -44,7 +44,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
     GoogleApiClient mGoogleApiClient;
     Location mLastLocation;
     LocationRequest mLocationRequest;
-    private Button logout,request;
+    private Button logout,request,settings;
     private LatLng pickuplocation;
     private String customerId = "";
     private Boolean requestbol = false;
@@ -56,6 +56,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
         setContentView(R.layout.activity_customer_map);
         logout = (Button)findViewById(R.id.logoutdriver);
         request = (Button)findViewById(R.id.callLift);
+        settings = (Button)findViewById(R.id.settings);
         customerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -112,6 +113,15 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
                 }
 
 
+            }
+        });
+
+        settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(CustomerMapActivity.this,CustomerSettingsActivity.class);
+                startActivity(intent);
+                return;
             }
         });
 

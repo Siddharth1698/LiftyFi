@@ -45,6 +45,7 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
     LocationRequest mLocationRequest;
     private Button logoutdriver;
     private String userid;
+    private Boolean isLoggingOut = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +62,10 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
         logoutdriver.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                isLoggingOut = true;
+                disconnectDriver();
                 FirebaseAuth.getInstance().signOut();
+
                 Intent intent = new Intent(DriverMapsActivity.this,MainActivity.class);
                 startActivity(intent);
                 finish();
@@ -228,13 +232,23 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
+    private void disconnectDriver(){
+        isLoggingOut = true;
+        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient,this);
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("driversAvailable");
 
         GeoFire geoFire = new GeoFire(ref);
         geoFire.removeLocation(userid);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (!isLoggingOut){
+
+            disconnectDriver();
+
+        }
+
     }
 }
