@@ -50,6 +50,9 @@ public class DriverLoginActivity extends AppCompatActivity {
         mRegister = (Button)findViewById(R.id.registerDriverBtn);
 
 
+
+
+
         mRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -61,8 +64,8 @@ public class DriverLoginActivity extends AppCompatActivity {
                            if (task.isSuccessful()){
                                uid = auth.getUid();
                                DatabaseReference current_user_db = FirebaseDatabase.getInstance()
-                                       .getReference().child("Users").child("Drivers").child(uid);
-                               current_user_db.setValue(true);
+                                       .getReference().child("Users").child("Drivers").child(uid).child("name");
+                               current_user_db.setValue(email);
                                Toast.makeText(DriverLoginActivity.this,"Succesfully Registered",Toast.LENGTH_SHORT).show();
                            }else {
                                Toast.makeText(DriverLoginActivity.this,"Error signing in",Toast.LENGTH_SHORT).show();

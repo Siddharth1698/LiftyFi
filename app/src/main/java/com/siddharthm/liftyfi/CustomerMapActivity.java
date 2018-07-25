@@ -12,6 +12,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
@@ -39,9 +42,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CustomerMapActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,com.google.android.gms.location.LocationListener {
 
@@ -55,6 +60,9 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
     private Boolean requestbol = false;
     private Marker pickupMarker;
     private String destination;
+    private LinearLayout mDriverInfo;
+    private ImageView mDriverProfileImage;
+    private TextView mDriverName,mDriverPhone,mDriverCar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +71,11 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
         logout = (Button)findViewById(R.id.logoutdriver);
         request = (Button)findViewById(R.id.callLift);
         settings = (Button)findViewById(R.id.settings);
+        mDriverInfo = (LinearLayout)findViewById(R.id.driverInfo);
+        mDriverProfileImage = (ImageView) findViewById(R.id.driverProfileImage);
+        mDriverName = (TextView) findViewById(R.id.driverName);
+        mDriverPhone = (TextView) findViewById(R.id.driverPhone);
+        mDriverCar = (TextView)findViewById(R.id.driverCar);
         customerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -89,8 +102,8 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
                     driverLocationRef.removeEventListener(driverLocationRefListner);
                     geoQuery.removeAllListeners();
                     if (driverFoundId != null){
-                        DatabaseReference driverRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverFoundId);
-                        driverRef.setValue(true);
+                        DatabaseReference driverRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverFoundId).child("customerRequest");
+                        driverRef.removeValue();
                         driverFoundId = null;
                     }
                     driverFound = false;
@@ -103,6 +116,11 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
                         pickupMarker.remove();
                     }
                     request.setText("Liftyfi Now");
+
+                    mDriverInfo.setVisibility(View.GONE);
+                    mDriverName.setText("");
+                    mDriverCar.setText("");
+                    mDriverCar.setText("" );
                 }else{
                     requestbol = true;
                     String userid = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -180,6 +198,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
 
                     request.setText("Looking for Driver Location...");
                     getDriverLocation();
+                    getDriverInfo();
                 }
             }
 
@@ -207,6 +226,38 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
             }
         });
     }
+
+    private void getDriverInfo() {
+        mDriverInfo.setVisibility(View.VISIBLE);
+        DatabaseReference mCustomerDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverFoundId);
+        mCustomerDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists() && dataSnapshot.getChildrenCount()>0){
+                    Map<String,Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                    if (map.get("name")!=null){
+
+                        mDriverName.setText(map.get("name").toString());
+                    }
+                    if (map.get("phone")!=null){
+                        mDriverPhone.setText(map.get("phone").toString());
+                    }
+                    if (map.get("car")!=null){
+                        mDriverCar.setText(map.get("car").toString());
+                    }
+                    if (map.get("profileImageUrl")!=null){
+                        Picasso.get().load(map.get("profileImageUrl").toString()).into(mDriverProfileImage);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     private Marker driverMarker;
     private DatabaseReference driverLocationRef;
     private ValueEventListener driverLocationRefListner;

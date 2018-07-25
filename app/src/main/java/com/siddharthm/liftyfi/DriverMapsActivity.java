@@ -47,7 +47,7 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
     GoogleApiClient mGoogleApiClient;
     Location mLastLocation;
     LocationRequest mLocationRequest;
-    private Button logoutdriver;
+    private Button logoutdriver,mSettings;
     private String userid;
     private Boolean isLoggingOut = false;
     private LinearLayout mCustomerInfo;
@@ -65,6 +65,7 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
         mCustomerPhone = (TextView) findViewById(R.id.customerPhone);
         mCustomerDestination = (TextView)findViewById(R.id.customerDestination);
         logoutdriver = (Button)findViewById(R.id.logoutdriver);
+        mSettings = (Button)findViewById(R.id.settingsdriver);
         userid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -81,6 +82,18 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
                 Intent intent = new Intent(DriverMapsActivity.this,MainActivity.class);
                 startActivity(intent);
                 finish();
+                return;
+            }
+        });
+
+        mSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                isLoggingOut=true;
+
+                Intent intent=new Intent(DriverMapsActivity.this,DriverSettingsActivity.class);
+                startActivity(intent);
                 return;
             }
         });
@@ -314,6 +327,12 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
 
         GeoFire geoFire = new GeoFire(ref);
         geoFire.removeLocation(userid);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isLoggingOut=false;
     }
 
     @Override

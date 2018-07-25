@@ -12,6 +12,12 @@
         android:layout_height="wrap_content"
         android:text="Logout"
         android:id="@+id/logoutdriver"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Settings"
+        android:layout_gravity="right"
+        android:id="@+id/settingsdriver"/>
 
     <fragment
         android:id="@+id/map"
