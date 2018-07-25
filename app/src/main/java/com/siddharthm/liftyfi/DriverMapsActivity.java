@@ -11,6 +11,9 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
@@ -32,6 +35,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 import java.util.Map;
@@ -46,12 +50,19 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
     private Button logoutdriver;
     private String userid;
     private Boolean isLoggingOut = false;
+    private LinearLayout mCustomerInfo;
+    private ImageView mCustomerProfileImage;
+    private TextView mCustomerName,mCustomerPhone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_maps);
 
+        mCustomerInfo = (LinearLayout)findViewById(R.id.customerInfo);
+        mCustomerProfileImage = (ImageView) findViewById(R.id.customerProfileImage);
+        mCustomerName = (TextView) findViewById(R.id.customerName);
+        mCustomerPhone = (TextView) findViewById(R.id.customerPhone);
         logoutdriver = (Button)findViewById(R.id.logoutdriver);
         userid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -85,6 +96,7 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
 
                     customerId = dataSnapshot.getValue().toString();
                     getAssignedCustomerPickUpLocation();
+                    getAssignedCustomerInfo();
 
                 }else {
                     customerId = "";
@@ -94,6 +106,11 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
                     if (assignedCustomerPickUpLocationRef != null) {
                         assignedCustomerPickUpLocationRef.removeEventListener(assignedCustomerPickUpLocationRefListner);
                     }
+                    mCustomerInfo.setVisibility(View.GONE);
+                    mCustomerName.setText("");
+                    mCustomerPhone.setText("");
+                    mCustomerProfileImage.setImageResource(R.drawable.default_pic);
+
                 }
             }
 
@@ -103,6 +120,35 @@ public class DriverMapsActivity extends FragmentActivity implements OnMapReadyCa
             }
         });
 
+    }
+
+
+    private void getAssignedCustomerInfo(){
+        mCustomerInfo.setVisibility(View.VISIBLE);
+        DatabaseReference mCustomerDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(customerId);
+        mCustomerDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists() && dataSnapshot.getChildrenCount()>0){
+                    Map<String,Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                    if (map.get("name")!=null){
+
+                        mCustomerName.setText(map.get("name").toString());
+                    }
+                    if (map.get("phone")!=null){
+                        mCustomerPhone.setText(map.get("phone").toString());
+                    }
+                    if (map.get("profileImageUrl")!=null){
+                        Picasso.get().load(map.get("profileImageUrl").toString()).into(mCustomerProfileImage);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
     Marker pickUpMarker;
     private DatabaseReference assignedCustomerPickUpLocationRef;
