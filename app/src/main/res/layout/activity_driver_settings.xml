@@ -41,6 +41,33 @@
         android:hint="CAR"
         android:layout_marginBottom="20sp"/>
 
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/radioGroup"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lifty X"
+            android:id="@+id/liftyx"/>
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lifty Black"
+            android:id="@+id/liftyblack"/>
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lifty XL"
+            android:id="@+id/liftyxl"/>
+
+
+    </RadioGroup>
+
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -11,8 +11,7 @@
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+        android:layout_height="match_parent" />
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
@@ -51,24 +50,24 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_gravity="bottom">
+        android:layout_gravity="bottom"
+        android:orientation="vertical">
 
 
         <LinearLayout
+            android:id="@+id/driverInfo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/driverInfo"
-            android:orientation="horizontal"
             android:background="@android:color/white"
+            android:orientation="horizontal"
             android:visibility="gone">
 
             <ImageView
+                android:id="@+id/driverProfileImage"
                 android:layout_width="100sp"
                 android:layout_height="100sp"
-                android:id="@+id/driverProfileImage"
-                android:src="@drawable/default_pic"
-                android:padding="20sp"/>
+                android:padding="20sp"
+                android:src="@drawable/default_pic" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -78,42 +77,78 @@
 
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:id="@+id/driverName"
-                    android:paddingBottom="10sp"
-                    android:paddingTop="20sp"/>
-
-                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingBottom="10sp"
+                    android:paddingTop="20sp" />
+
+                <TextView
                     android:id="@+id/driverPhone"
-                    android:paddingBottom="10sp"
-                    android:paddingTop="20sp"/>
-
-                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/driverCar"
                     android:paddingBottom="10sp"
-                    android:paddingTop="20sp"/>
+                    android:paddingTop="20sp" />
+
+                <TextView
+                    android:id="@+id/driverCar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="10sp"
+                    android:paddingTop="20sp" />
 
             </LinearLayout>
 
         </LinearLayout>
 
-
-        <Button
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/callLift"
-            android:text="LiftyFi Now"
-            android:layout_gravity="bottom"/>
+            android:background="@android:color/white"
+            android:orientation="vertical">
+
+            <RadioGroup
+                android:id="@+id/radioGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/liftyx"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Lifty X" />
+
+                <RadioButton
+                    android:id="@+id/liftyblack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Lifty Black" />
+
+                <RadioButton
+                    android:id="@+id/liftyxl"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Lifty XL" />
 
 
+            </RadioGroup>
+
+            <Button
+                android:id="@+id/callLift"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:text="LiftyFi Now" />
+
+
+        </LinearLayout>
 
 
     </LinearLayout>
+
+
 
 
 </FrameLayout>

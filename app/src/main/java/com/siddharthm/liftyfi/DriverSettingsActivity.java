@@ -12,6 +12,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -46,7 +48,8 @@ public class DriverSettingsActivity extends AppCompatActivity {
     private ImageView mProfileImage;
     private Uri resultUri;
     private String profileImageUrl;
-    private String mCar;
+    private String mCar,mService;
+    private RadioGroup mRadioGroup;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -69,6 +72,7 @@ public class DriverSettingsActivity extends AppCompatActivity {
         mBack = (Button)findViewById(R.id.back);
         mCarFeild = (EditText)findViewById(R.id.car);
         mProfileImage = (ImageView)findViewById(R.id.profileimage);
+        mRadioGroup = (RadioGroup)findViewById(R.id.radioGroup);
         auth = FirebaseAuth.getInstance();
         userId = auth.getCurrentUser().getUid();
         mDriverDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(userId);
@@ -114,6 +118,22 @@ public class DriverSettingsActivity extends AppCompatActivity {
                         mCar = map.get("car").toString();
                         mCarFeild.setText(mCar);
                     }
+                    if (map.get("service")!=null){
+                        mService = map.get("service").toString();
+                        switch (mService){
+                            case "Lifty X":
+                                mRadioGroup.check(R.id.liftyx);
+                                break;
+
+                            case "Lifty Black":
+                                mRadioGroup.check(R.id.liftyblack);
+                                break;
+
+                            case "Lifty XL":
+                                mRadioGroup.check(R.id.liftyxl);
+                                break;
+                        }
+                    }
                     if (map.get("profileImageUrl")!=null){
                         profileImageUrl = map.get("profileImageUrl").toString();
                         Picasso.get().load(profileImageUrl).into(mProfileImage);
@@ -129,6 +149,14 @@ public class DriverSettingsActivity extends AppCompatActivity {
     }
 
     private void saveUserInformation() {
+
+        int selectId = mRadioGroup.getCheckedRadioButtonId();
+        final RadioButton radioButton = (RadioButton)findViewById(selectId);
+        if (radioButton == null){
+            return;
+        }
+
+        mService = radioButton.getText().toString();
         name = mName.getText().toString();
         phone = mPhone.getText().toString();
         mCar = mCarFeild.getText().toString();
@@ -136,6 +164,7 @@ public class DriverSettingsActivity extends AppCompatActivity {
         userInfo.put("name",name);
         userInfo.put("phone",phone);
         userInfo.put("car",mCar);
+        userInfo.put("service",mService);
         mDriverDatabase.updateChildren(userInfo);
         if (resultUri != null) {
 
